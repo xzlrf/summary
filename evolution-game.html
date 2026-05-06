@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命进化 - Evolution</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #131842;
+  --bg-card: #1a1f4e;
+  --accent: #6c63ff;
+  --accent-glow: rgba(108, 99, 255, 0.3);
+  --text-primary: #e8e8ff;
+  --text-secondary: #8888aa;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+}
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+#particles-bg {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+.container {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto; padding: 20px;
+}
+header {
+  text-align: center; padding: 30px 0 20px;
+}
+header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #6c63ff, #4ade80, #fbbf24);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px var(--accent-glow);
+  margin-bottom: 8px;
+}
+header p { color: var(--text-secondary); font-size: 1rem; }
+/* Evolution Stage Indicator */
+.evo-stage-bar {
+  background: var(--bg-secondary);
+  border-radius: 16px; padding: 16px 24px;
+  margin: 20px 0;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.evo-stage-bar .stage-icon {
+  font-size: 2.5rem; flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.evo-stage-bar .stage-info { flex: 1; }
+.evo-stage-bar .stage-name { font-size: 1.3rem; font-weight: 700; }
+.evo-stage-bar .stage-desc { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
+.evo-progress-wrap {
+  width: 100%; height: 8px;
+  background: var(--bg-primary); border-radius: 4px;
+  margin-top: 10px; overflow: hidden;
+}
+.evo-progress {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  transition: width 0.3s ease;
+}
+/* Resource Panel */
+.resource-panel {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px; margin: 20px 0;
+}
+.resource-card {
+  background: var(--bg-card); border-radius: 12px;
+  padding: 16px; text-align: center;
+  border: 1px solid rgba(108,99,255,0.1);
+  transition: all 0.3s ease;
+}
+.resource-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+.resource-card .res-icon { font-size: 1.5rem; }
+.resource-card .res-name { font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0; }
+.resource-card .res-value { font-size: 1.5rem; font-weight: 700; }
+.resource-card .res-rate { font-size: 0.75rem; color: var(--success); }
+/* Main Layout */
+.main-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; margin-top: 20px;
+}
+@media (max-width: 768px) {
+  .main-layout { grid-template-columns: 1fr; }
+  header h1 { font-size: 1.8rem; }
+}
+/* Card Styles */
+.card {
+  background: var(--bg-card); border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(108,99,255,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.card h3 {
+  font-size: 1.1rem; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+/* Click Area */
+.click-area {
+  width: 100%; aspect-ratio: 1;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem; cursor: pointer;
+  background: radial-gradient(circle at 30% 30%, var(--accent), #1a1f4e);
+  box-shadow: 0 0 40px var(--accent-glow), inset 0 0 30px rgba(108,99,255,0.2);
+  transition: all 0.1s ease; user-select: none;
+  margin: 20px auto; max-width: 250px;
+  position: relative;
+}
+.click-area:active { transform: scale(0.95); }
+.click-area .ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(108,99,255,0.4);
+  animation: ripple 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple {
+  from { width: 0; height: 0; opacity: 1; }
+  to { width: 200px; height: 200px; opacity: 0; }
+}
+.click-value {
+  position: absolute; color: var(--success);
+  font-size: 1.2rem; font-weight: 700;
+  animation: floatUp 1s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-60px); }
+}
+/* Upgrade Items */
+.upgrade-list { max-height: 400px; overflow-y: auto; }
+.upgrade-list::-webkit-scrollbar { width: 6px; }
+.upgrade-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.upgrade-item {
+  background: var(--bg-secondary); border-radius: 10px;
+  padding: 12px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.upgrade-item:hover { border-color: var(--accent); }
+.upgrade-item.disabled { opacity: 0.5; cursor: not-allowed; }
+.upgrade-item .up-icon { font-size: 1.8rem; flex-shrink: 0; }
+.upgrade-item .up-info { flex: 1; }
+.upgrade-item .up-name { font-size: 0.9rem; font-weight: 600; }
+.upgrade-item .up-desc { font-size: 0.75rem; color: var(--text-secondary); }
+.upgrade-item .up-cost { font-size: 0.8rem; color: var(--warning); font-weight: 600; }
+.upgrade-item .up-level { font-size: 0.8rem; color: var(--accent); }
+/* Evolution Button */
+.evo-btn {
+  width: 100%; padding: 14px;
+  border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  color: white;
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+.evo-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px var(--accent-glow); }
+.evo-btn:disabled {
+  opacity: 0.4; cursor: not-allowed; transform: none;
+}
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+.tab {
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--bg-secondary); border: none;
+  color: var(--text-secondary); cursor: pointer;
+  font-size: 0.85rem; transition: all 0.2s;
+}
+.tab.active { background: var(--accent); color: white; }
+/* Achievements */
+.achievement-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 8px;
+}
+.achievement {
+  width: 60px; height: 60px; border-radius: 12px;
+  background: var(--bg-secondary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; opacity: 0.3;
+  transition: all 0.3s;
+}
+.achievement.unlocked {
+  opacity: 1;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+  animation: achievePop 0.5s ease;
+}
+@keyframes achievePop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+/* Log */
+.log-area {
+  max-height: 150px; overflow-y: auto;
+  font-size: 0.8rem; color: var(--text-secondary);
+  padding: 10px; background: var(--bg-primary);
+  border-radius: 8px; margin-top: 10px;
+}
+.log-area::-webkit-scrollbar { width: 4px; }
+.log-area::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 2px; }
+.log-entry { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.log-entry:last-child { color: var(--accent); }
+/* Notification */
+.notification {
+  position: fixed; top: 20px; right: 20px;
+  background: var(--bg-card); border: 1px solid var(--accent);
+  border-radius: 12px; padding: 16px 24px;
+  z-index: 100; animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } }
+@keyframes slideOut { to { transform: translateX(100%); opacity: 0; } }
+.notification .notif-title { font-weight: 700; font-size: 1rem; }
+.notification .notif-body { color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px; }
+/* Mini Game Overlay */
+.minigame-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(10, 14, 39, 0.9); z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+}
+.minigame-box {
+  background: var(--bg-card); border-radius: 20px;
+  padding: 30px; text-align: center; max-width: 500px; width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.minigame-box h2 { margin-bottom: 16px; }
+.minigame-close {
+  position: absolute; top: 10px; right: 10px;
+  background: none; border: none; color: var(--text-secondary);
+  font-size: 1.5rem; cursor: pointer;
+}
+/* Stage-specific backgrounds */
+.stage-0 .click-area { background: radial-gradient(circle at 30% 30%, #1e3a5f, #0a1628); }
+.stage-1 .click-area { background: radial-gradient(circle at 30% 30%, #2d5016, #0a1628); }
+.stage-2 .click-area { background: radial-gradient(circle at 30% 30%, #1e4d6b, #0a1628); }
+.stage-3 .click-area { background: radial-gradient(circle at 30% 30%, #4a3d1e, #1a1f4e); }
+.stage-4 .click-area { background: radial-gradient(circle at 30% 30%, #3d6b4a, #0a2816); }
+.stage-5 .click-area { background: radial-gradient(circle at 30% 30%, #6b3d3d, #280a0a); }
+/* Floating organisms */
+.organism {
+  position: fixed; pointer-events: none; z-index: 0;
+  opacity: 0.15; font-size: 2rem;
+  animation: floatAround 20s linear infinite;
+}
+@keyframes floatAround {
+  0% { transform: translateY(100vh) rotate(0deg); }
+  100% { transform: translateY(-100px) rotate(360deg); }
+}
+</style>
+</head>
+<body>
+<canvas id="particles-bg"></canvas>
+
+<div class="container" id="app">
+  <header>
+    <h1>🧬 生命进化</h1>
+    <p>从单细胞到星辰大海</p>
+  </header>
+
+  <!-- Evolution Stage Bar -->
+  <div class="evo-stage-bar">
+    <div class="stage-icon" id="stageIcon">🦠</div>
+    <div class="stage-info">
+      <div class="stage-name" id="stageName">原始细胞</div>
+      <div class="stage-desc" id="stageDesc">生命的最初形态，一切从这里开始</div>
+      <div class="evo-progress-wrap">
+        <div class="evo-progress" id="evoProgress" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resource Panel -->
+  <div class="resource-panel" id="resourcePanel"></div>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+    <!-- Left: Click & Evolution -->
+    <div>
+      <div class="card">
+        <h3>🎯 点击获取能量</h3>
+        <div class="click-area" id="clickArea">
+          <span id="clickEmoji">🦠</span>
+        </div>
+        <button class="evo-btn" id="evoBtn" disabled>
+          进化到下一阶段 (需要 <span id="evoCost">100</span> <span id="evoCostType">DNA</span>)
+        </button>
+      </div>
+
+      <!-- Mini Game Trigger -->
+      <div class="card" style="margin-top: 16px;">
+        <h3>🎮 小游戏</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <button class="evo-btn" id="quizBtn" style="font-size: 0.85rem; padding: 10px;">
+            📝 知识问答
+          </button>
+          <button class="evo-btn" id="catchBtn" style="font-size: 0.85rem; padding: 10px; background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+            🎯 捕捉能量
+          </button>
+          <button class="evo-btn" id="memoryBtn" style="font-size: 0.85rem; padding: 10px; background: linear-gradient(135deg, #4ade80, #22c55e);">
+            🧠 记忆匹配
+          </button>
+          <button class="evo-btn" id="clickerBtn" style="font-size: 0.85rem; padding: 10px; background: linear-gradient(135deg, #f87171, #ef4444);">
+            ⚡ 疯狂点击
+          </button>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="card" style="margin-top: 16px;">
+        <h3>🏆 成就 (<span id="achieveCount">0</span>/<span id="achieveTotal">0</span>)</h3>
+        <div class="achievement-grid" id="achieveGrid"></div>
+      </div>
+    </div>
+
+    <!-- Right: Upgrades & Log -->
+    <div>
+      <div class="card">
+        <h3>⚡ 升级</h3>
+        <div class="tabs" id="upgradeTabs">
+          <button class="tab active" data-tab="production">生产</button>
+          <button class="tab" data-tab="click">点击</button>
+          <button class="tab" data-tab="special">特殊</button>
+        </div>
+        <div class="upgrade-list" id="upgradeList"></div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h3>📜 日志</h3>
+        <div class="log-area" id="logArea"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="card" style="margin-top: 16px;">
+        <h3>📊 统计</h3>
+        <div id="statsArea" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ GAME ENGINE ============
+const STAGES = [
+  { name: '原始细胞', icon: '🦠', desc: '生命的最初形态，一切从这里开始', evoCost: 100, costType: 'DNA', resources: ['dna', 'energy'] },
+  { name: '多细胞生物', icon: '🪸', desc: '多个细胞协同工作，生命开始复杂化', evoCost: 500, costType: 'DNA', resources: ['dna', 'energy', 'food'] },
+  { name: '海洋生物', icon: '🐟', desc: '在广阔的海洋中自由游弋', evoCost: 2000, costType: 'DNA', resources: ['dna', 'energy', 'food', 'pearl'] },
+  { name: '陆地生物', icon: '🦎', desc: '踏上陆地，开拓新天地', evoCost: 8000, costType: 'DNA', resources: ['dna', 'energy', 'food', 'pearl', 'wood'] },
+  { name: '智慧生命', icon: '🧑', desc: '发展出智慧，文明的曙光初现', evoCost: 30000, costType: 'DNA', resources: ['dna', 'energy', 'food', 'pearl', 'wood', 'knowledge'] },
+  { name: '星际文明', icon: '🚀', desc: '跨越星辰，探索宇宙的奥秘', evoCost: 100000, costType: 'DNA', resources: ['dna', 'energy', 'food', 'pearl', 'wood', 'knowledge', 'stardust'] },
+  { name: '高维存在', icon: '✨', desc: '超越维度的限制，成为宇宙的主宰', evoCost: 500000, costType: 'DNA', resources: ['dna', 'energy', 'food', 'pearl', 'wood', 'knowledge', 'stardust', 'cosmos'] },
+];
+
+const RES_INFO = {
+  dna: { name: 'DNA', icon: '🧬' },
+  energy: { name: '能量', icon: '⚡' },
+  food: { name: '食物', icon: '🍖' },
+  pearl: { name: '珍珠', icon: '🫧' },
+  wood: { name: '木材', icon: '🪵' },
+  knowledge: { name: '知识', icon: '📚' },
+  stardust: { name: '星尘', icon: '💫' },
+  cosmos: { name: '宇宙精华', icon: '🌌' },
+};
+
+const UPGRADES = {
+  0: { // Stage 0: Single cell
+    production: [
+      { id: 'mitochondria', name: '线粒体', desc: '自动产生能量', icon: '🔋', baseCost: 15, costType: 'dna', baseRate: 1, rateType: 'energy', costScale: 1.15 },
+      { id: 'ribosome', name: '核糖体', desc: '自动合成DNA', icon: '🧪', baseCost: 50, costType: 'energy', baseRate: 0.5, rateType: 'dna', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'cellMembrane', name: '细胞膜强化', desc: '每次点击+1能量', icon: '🛡️', baseCost: 10, costType: 'dna', clickAdd: 1, costScale: 1.5 },
+      { id: 'flagellum', name: '鞭毛进化', desc: '每次点击+2能量', icon: '🏊', baseCost: 100, costType: 'dna', clickAdd: 2, costScale: 1.8 },
+    ],
+    special: [
+      { id: 'photosynthesis', name: '光合作用', desc: '能量产量翻倍', icon: '☀️', baseCost: 200, costType: 'dna', multiplier: 2, multType: 'energy', costScale: 3 },
+    ],
+  },
+  1: {
+    production: [
+      { id: 'tissue', name: '组织分化', desc: '自动产生食物', icon: '🫁', baseCost: 100, costType: 'dna', baseRate: 1, rateType: 'food', costScale: 1.15 },
+      { id: 'nerveCell', name: '神经细胞', desc: '加速DNA合成', icon: '🧠', baseCost: 300, costType: 'energy', baseRate: 3, rateType: 'dna', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'multicellClick', name: '群体协作', desc: '每次点击+5能量', icon: '🤝', baseCost: 200, costType: 'dna', clickAdd: 5, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'reproduction', name: '有性繁殖', desc: '所有产量+50%', icon: '💕', baseCost: 1000, costType: 'dna', multiplier: 1.5, multType: 'all', costScale: 4 },
+    ],
+  },
+  2: {
+    production: [
+      { id: 'gills', name: '鳃', desc: '自动产生珍珠', icon: '🫧', baseCost: 500, costType: 'dna', baseRate: 0.5, rateType: 'pearl', costScale: 1.15 },
+      { id: 'fins', name: '鳍', desc: '自动产生食物', icon: '🐠', baseCost: 200, costType: 'energy', baseRate: 5, rateType: 'food', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'predator', name: '捕食者', desc: '每次点击+15能量', icon: '🦈', baseCost: 800, costType: 'dna', clickAdd: 15, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'schooling', name: '鱼群效应', desc: '所有产量+100%', icon: '🐟', baseCost: 3000, costType: 'dna', multiplier: 2, multType: 'all', costScale: 4 },
+    ],
+  },
+  3: {
+    production: [
+      { id: 'lungs', name: '肺', desc: '自动产生木材', icon: '🌿', baseCost: 2000, costType: 'dna', baseRate: 1, rateType: 'wood', costScale: 1.15 },
+      { id: 'legs', name: '四肢', desc: '自动产生食物', icon: '🦿', baseCost: 1000, costType: 'energy', baseRate: 20, rateType: 'food', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'landClick', name: '陆地适应', desc: '每次点击+50能量', icon: '🏔️', baseCost: 3000, costType: 'dna', clickAdd: 50, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'warmBlood', name: '恒温动物', desc: '所有产量+150%', icon: '🔥', baseCost: 10000, costType: 'dna', multiplier: 2.5, multType: 'all', costScale: 4 },
+    ],
+  },
+  4: {
+    production: [
+      { id: 'brain', name: '大脑', desc: '自动产生知识', icon: '🧠', baseCost: 8000, costType: 'dna', baseRate: 0.5, rateType: 'knowledge', costScale: 1.15 },
+      { id: 'hands', name: '灵巧双手', desc: '自动产生木材', icon: '🤲', baseCost: 5000, costType: 'energy', baseRate: 10, rateType: 'wood', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'toolUse', name: '工具使用', desc: '每次点击+200能量', icon: '🔧', baseCost: 12000, costType: 'dna', clickAdd: 200, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'language', name: '语言', desc: '所有产量+200%', icon: '🗣️', baseCost: 50000, costType: 'dna', multiplier: 3, multType: 'all', costScale: 4 },
+    ],
+  },
+  5: {
+    production: [
+      { id: 'rocket', name: '火箭', desc: '自动产生星尘', icon: '🚀', baseCost: 30000, costType: 'dna', baseRate: 1, rateType: 'stardust', costScale: 1.15 },
+      { id: 'ai', name: '人工智能', desc: '自动产生知识', icon: '🤖', baseCost: 20000, costType: 'energy', baseRate: 5, rateType: 'knowledge', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'warpDrive', name: '曲速引擎', desc: '每次点击+1000能量', icon: '⚡', baseCost: 50000, costType: 'dna', clickAdd: 1000, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'ftl', name: '超光速', desc: '所有产量+300%', icon: '💨', baseCost: 200000, costType: 'dna', multiplier: 4, multType: 'all', costScale: 4 },
+    ],
+  },
+  6: {
+    production: [
+      { id: 'dimension', name: '维度操控', desc: '自动产生宇宙精华', icon: '🌀', baseCost: 100000, costType: 'dna', baseRate: 0.5, rateType: 'cosmos', costScale: 1.15 },
+      { id: 'multiverse', name: '多元宇宙', desc: '自动产生星尘', icon: '🌐', baseCost: 80000, costType: 'energy', baseRate: 20, rateType: 'stardust', costScale: 1.15 },
+    ],
+    click: [
+      { id: 'reality', name: '现实扭曲', desc: '每次点击+5000能量', icon: '💎', baseCost: 200000, costType: 'dna', clickAdd: 5000, costScale: 1.5 },
+    ],
+    special: [
+      { id: 'omniscient', name: '全知全能', desc: '所有产量+500%', icon: '👁️', baseCost: 800000, costType: 'dna', multiplier: 6, multType: 'all', costScale: 5 },
+    ],
+  },
+};
+
+const ACHIEVEMENTS = [
+  { id: 'first_click', name: '初次点击', icon: '👆', check: (g) => g.totalClicks >= 1 },
+  { id: 'click_100', name: '百次点击', icon: '💯', check: (g) => g.totalClicks >= 100 },
+  { id: 'click_1000', name: '千次点击', icon: '🔥', check: (g) => g.totalClicks >= 1000 },
+  { id: 'click_10000', name: '万次点击', icon: '⚡', check: (g) => g.totalClicks >= 10000 },
+  { id: 'evo_1', name: '多细胞', icon: '🪸', check: (g) => g.stage >= 1 },
+  { id: 'evo_2', name: '海洋生物', icon: '🐟', check: (g) => g.stage >= 2 },
+  { id: 'evo_3', name: '陆地生物', icon: '🦎', check: (g) => g.stage >= 3 },
+  { id: 'evo_4', name: '智慧生命', icon: '🧑', check: (g) => g.stage >= 4 },
+  { id: 'evo_5', name: '星际文明', icon: '🚀', check: (g) => g.stage >= 5 },
+  { id: 'evo_6', name: '高维存在', icon: '✨', check: (g) => g.stage >= 6 },
+  { id: 'dna_1000', name: 'DNA大师', icon: '🧬', check: (g) => g.totalDna >= 1000 },
+  { id: 'energy_1000', name: '能量大亨', icon: '⚡', check: (g) => g.totalEnergy >= 1000 },
+  { id: 'upgrade_10', name: '升级达人', icon: '🔧', check: (g) => g.totalUpgrades >= 10 },
+  { id: 'upgrade_50', name: '升级狂人', icon: '🏗️', check: (g) => g.totalUpgrades >= 50 },
+  { id: 'quiz_win', name: '知识渊博', icon: '📝', check: (g) => g.quizWins >= 1 },
+  { id: 'catch_win', name: '眼疾手快', icon: '🎯', check: (g) => g.catchWins >= 1 },
+  { id: 'memory_win', name: '记忆大师', icon: '🧠', check: (g) => g.memoryWins >= 1 },
+  { id: 'clicker_win', name: '点击之王', icon: '👑', check: (g) => g.clickerWins >= 1 },
+];
+
+// Game State
+let game = {
+  stage: 0,
+  resources: { dna: 0, energy: 0, food: 0, pearl: 0, wood: 0, knowledge: 0, stardust: 0, cosmos: 0 },
+  rates: {},
+  clickPower: 1,
+  clickAdd: 0,
+  multipliers: { all: 1, dna: 1, energy: 1, food: 1, pearl: 1, wood: 1, knowledge: 1, stardust: 1, cosmos: 1 },
+  upgrades: {},
+  totalClicks: 0,
+  totalDna: 0,
+  totalEnergy: 0,
+  totalUpgrades: 0,
+  quizWins: 0,
+  catchWins: 0,
+  memoryWins: 0,
+  clickerWins: 0,
+  achievements: new Set(),
+  logs: [],
+  startTime: Date.now(),
+};
+
+// Utility
+function formatNum(n) {
+  if (n >= 1e12) return (n / 1e12).toFixed(1) + 'T';
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return Math.floor(n).toString();
+}
+
+function getUpgradeCost(upg) {
+  let level = game.upgrades[upg.id] || 0;
+  return Math.floor(upg.baseCost * Math.pow(upg.costScale, level));
+}
+
+function notify(title, body) {
+  const n = document.createElement('div');
+  n.className = 'notification';
+  n.innerHTML = `<div class="notif-title">${title}</div><div class="notif-body">${body}</div>`;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 3000);
+}
+
+function addLog(msg) {
+  game.logs.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+  if (game.logs.length > 50) game.logs.pop();
+  renderLog();
+}
+
+function calcRates() {
+  let rates = {};
+  let stage = game.stage;
+  for (let s = 0; s <= stage; s++) {
+    let stageUpgs = UPGRADES[s];
+    if (!stageUpgs) continue;
+    let prods = stageUpgs.production || [];
+    prods.forEach(u => {
+      let level = game.upgrades[u.id] || 0;
+      if (level > 0) {
+        rates[u.rateType] = (rates[u.rateType] || 0) + u.baseRate * level * game.multipliers.all * (game.multipliers[u.rateType] || 1);
+      }
+    });
+  }
+  game.rates = rates;
+}
+
+// Render
+function renderResources() {
+  const panel = document.getElementById('resourcePanel');
+  let stage = game.stage;
+  let resList = STAGES[stage].resources;
+  let html = '';
+  resList.forEach(r => {
+    let info = RES_INFO[r];
+    let rate = game.rates[r] || 0;
+    html += `
+      <div class="resource-card">
+        <div class="res-icon">${info.icon}</div>
+        <div class="res-name">${info.name}</div>
+        <div class="res-value">${formatNum(game.resources[r])}</div>
+        <div class="res-rate">+${rate.toFixed(1)}/s</div>
+      </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+function renderStage() {
+  let stage = game.stage;
+  let s = STAGES[stage];
+  document.getElementById('stageIcon').textContent = s.icon;
+  document.getElementById('stageName').textContent = s.name;
+  document.getElementById('stageDesc').textContent = s.desc;
+  document.getElementById('clickEmoji').textContent = s.icon;
+  let progress = Math.min(100, (game.resources.dna / s.evoCost) * 100);
+  document.getElementById('evoProgress').style.width = progress + '%';
+  document.getElementById('evoCost').textContent = formatNum(s.evoCost);
+  document.getElementById('evoCostType').textContent = s.costType;
+  let evoBtn = document.getElementById('evoBtn');
+  evoBtn.disabled = game.resources.dna < s.evoCost;
+}
+
+function renderUpgrades() {
+  let activeTab = document.querySelector('.tab.active').dataset.tab;
+  let list = document.getElementById('upgradeList');
+  let stage = game.stage;
+  let html = '';
+
+  for (let s = stage; s >= 0; s--) {
+    let stageUpgs = UPGRADES[s];
+    if (!stageUpgs || !stageUpgs[activeTab]) continue;
+    stageUpgs[activeTab].forEach(u => {
+      let level = game.upgrades[u.id] || 0;
+      let cost = getUpgradeCost(u);
+      let canAfford = (game.resources[u.costType] || 0) >= cost;
+      let costIcon = RES_INFO[u.costType] ? RES_INFO[u.costType].icon : '💰';
+      html += `
+        <div class="upgrade-item ${canAfford ? '' : 'disabled'}" data-id="${u.id}" onclick="buyUpgrade('${u.id}')">
+          <div class="up-icon">${u.icon}</div>
+          <div class="up-info">
+            <div class="up-name">${u.name}</div>
+            <div class="up-desc">${u.desc}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="up-cost">${costIcon} ${formatNum(cost)}</div>
+            <div class="up-level">Lv.${level}</div>
+          </div>
+        </div>`;
+    });
+  }
+  if (!html) html = '<div style="text-align: center; color: var(--text-secondary); padding: 20px;">暂无可升级项</div>';
+  list.innerHTML = html;
+}
+
+function renderLog() {
+  let area = document.getElementById('logArea');
+  area.innerHTML = game.logs.slice(0, 20).map(l => `<div class="log-entry">${l}</div>`).join('');
+}
+
+function renderStats() {
+  let elapsed = Math.floor((Date.now() - game.startTime) / 1000);
+  let mins = Math.floor(elapsed / 60);
+  let secs = elapsed % 60;
+  document.getElementById('statsArea').innerHTML = `
+    <p>总点击: ${formatNum(game.totalClicks)}</p>
+    <p>总DNA: ${formatNum(game.totalDna)}</p>
+    <p>总能量: ${formatNum(game.totalEnergy)}</p>
+    <p>总升级: ${game.totalUpgrades}</p>
+    <p>游戏时间: ${mins}分${secs}秒</p>
+    <p>成就: ${game.achievements.size}/${ACHIEVEMENTS.length}</p>
+  `;
+}
+
+function renderAchievements() {
+  let grid = document.getElementById('achieveGrid');
+  // Only build HTML once, then do incremental updates
+  if (!grid.dataset.initialized) {
+    let html = '';
+    ACHIEVEMENTS.forEach(a => {
+      let unlocked = game.achievements.has(a.id);
+      html += `<div class="achievement ${unlocked ? 'unlocked' : ''}" data-achieve="${a.id}" title="${a.name}">${a.icon}</div>`;
+    });
+    grid.innerHTML = html;
+    grid.dataset.initialized = '1';
+  } else {
+    ACHIEVEMENTS.forEach(a => {
+      let el = grid.querySelector(`[data-achieve="${a.id}"]`);
+      if (!el) return;
+      let isUnlocked = game.achievements.has(a.id);
+      if (isUnlocked && !el.classList.contains('unlocked')) {
+        el.classList.add('unlocked');
+      }
+    });
+  }
+  document.getElementById('achieveCount').textContent = game.achievements.size;
+  document.getElementById('achieveTotal').textContent = ACHIEVEMENTS.length;
+}
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a => {
+    if (!game.achievements.has(a.id) && a.check(game)) {
+      game.achievements.add(a.id);
+      notify('🏆 成就解锁!', a.name);
+      addLog(`解锁成就: ${a.name}`);
+    }
+  });
+  renderAchievements();
+}
+
+// Actions
+function buyUpgrade(id) {
+  let found = null;
+  for (let s = 0; s <= game.stage; s++) {
+    let stageUpgs = UPGRADES[s];
+    if (!stageUpgs) continue;
+    for (let tab of ['production', 'click', 'special']) {
+      let list = stageUpgs[tab] || [];
+      found = list.find(u => u.id === id);
+      if (found) break;
+    }
+    if (found) break;
+  }
+  if (!found) return;
+  let cost = getUpgradeCost(found);
+  if ((game.resources[found.costType] || 0) < cost) return;
+
+  game.resources[found.costType] -= cost;
+  game.upgrades[found.id] = (game.upgrades[found.id] || 0) + 1;
+  game.totalUpgrades++;
+
+  if (found.clickAdd) {
+    game.clickAdd += found.clickAdd;
+  }
+  if (found.multiplier) {
+    game.multipliers[found.multType] = (game.multipliers[found.multType] || 1) * found.multiplier;
+  }
+
+  calcRates();
+  renderAll();
+  addLog(`升级了 ${found.name} (Lv.${game.upgrades[found.id]})`);
+  checkAchievements();
+}
+
+function evolve() {
+  let stage = game.stage;
+  let s = STAGES[stage];
+  if (game.resources.dna < s.evoCost) return;
+
+  game.resources.dna -= s.evoCost;
+  game.stage++;
+  let next = STAGES[game.stage];
+  notify('🧬 进化!', `从 ${s.name} 进化为 ${next.name}`);
+  addLog(`进化为: ${next.name}`);
+  calcRates();
+  renderAll();
+  checkAchievements();
+}
+
+function doClick(e) {
+  let energy = game.clickPower + game.clickAdd;
+  game.resources.energy += energy;
+  game.totalEnergy += energy;
+  game.resources.dna += Math.ceil(energy * 0.1);
+  game.totalDna += Math.ceil(energy * 0.1);
+  game.totalClicks++;
+
+  // Visual feedback
+  let rect = document.getElementById('clickArea').getBoundingClientRect();
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+
+  // Ripple
+  let ripple = document.createElement('div');
+  ripple.className = 'ripple';
+  ripple.style.left = (x - 100) + 'px';
+  ripple.style.top = (y - 100) + 'px';
+  document.getElementById('clickArea').appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+
+  // Float value
+  let val = document.createElement('div');
+  val.className = 'click-value';
+  val.textContent = `+${energy}`;
+  val.style.left = e.clientX + 'px';
+  val.style.top = (e.clientY - 20) + 'px';
+  document.body.appendChild(val);
+  setTimeout(() => val.remove(), 1000);
+
+  renderResources();
+  renderStage();
+  renderUpgrades();
+  checkAchievements();
+}
+
+function renderAll() {
+  calcRates();
+  renderResources();
+  renderStage();
+  renderUpgrades();
+  renderLog();
+  renderStats();
+  renderAchievements();
+}
+
+// Game Loop
+function gameLoop() {
+  calcRates();
+  for (let res in game.rates) {
+    game.resources[res] += game.rates[res] / 10; // 100ms tick
+    if (res === 'dna') game.totalDna += game.rates[res] / 10;
+    if (res === 'energy') game.totalEnergy += game.rates[res] / 10;
+  }
+  renderResources();
+  renderStage();
+  renderUpgrades();
+  checkAchievements();
+}
+
+// ============ MINI GAMES ============
+
+// Quiz Game
+const QUIZ_QUESTIONS = [
+  { q: 'DNA的全称是什么？', a: ['脱氧核糖核酸', '核糖核酸', '氨基酸', '脂肪酸'], correct: 0 },
+  { q: 'RDB持久化中，fork子进程使用了什么技术？', a: ['写时复制', '内存映射', '零拷贝', '异步IO'], correct: 0 },
+  { q: 'AOF默认同步策略是什么？', a: ['always', 'everysec', 'no', 'auto'], correct: 1 },
+  { q: '混合持久化从哪个版本开始支持？', a: ['3.0', '4.0', '5.0', '6.0'], correct: 1 },
+  { q: '光合作用的主要产物是什么？', a: ['氧气和葡萄糖', '二氧化碳', '水', '氮气'], correct: 0 },
+  { q: '寒武纪大爆发发生在约多少年前？', a: ['5.4亿年', '2.5亿年', '1亿年', '10亿年'], correct: 0 },
+  { q: '第一个登上陆地的脊椎动物属于？', a: ['鱼类', '两栖类', '爬行类', '哺乳类'], correct: 1 },
+  { q: '人类有多少对染色体？', a: ['23对', '22对', '24对', '46对'], correct: 0 },
+];
+
+function startQuiz() {
+  let q = QUIZ_QUESTIONS[Math.floor(Math.random() * QUIZ_QUESTIONS.length)];
+  let overlay = document.createElement('div');
+  overlay.className = 'minigame-overlay';
+  overlay.innerHTML = `
+    <div class="minigame-box" style="position: relative;">
+      <button class="minigame-close" onclick="this.closest('.minigame-overlay').remove()">✕</button>
+      <h2>📝 知识问答</h2>
+      <p style="margin: 16px 0; font-size: 1.1rem;">${q.q}</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" id="quizOptions"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let opts = document.getElementById('quizOptions');
+  q.a.forEach((a, i) => {
+    let btn = document.createElement('button');
+    btn.className = 'evo-btn';
+    btn.style.fontSize = '0.9rem';
+    btn.textContent = a;
+    btn.onclick = () => {
+      if (i === q.correct) {
+        let reward = 100 * (game.stage + 1);
+        game.resources.dna += reward;
+        game.totalDna += reward;
+        game.quizWins++;
+        overlay.querySelector('.minigame-box').innerHTML = `
+          <h2>✅ 正确!</h2>
+          <p style="margin: 16px 0; color: var(--success);">获得 ${formatNum(reward)} DNA!</p>
+          <button class="evo-btn" onclick="this.closest('.minigame-overlay').remove()">关闭</button>`;
+        addLog('知识问答: 正确!');
+      } else {
+        overlay.querySelector('.minigame-box').innerHTML = `
+          <h2>❌ 错误!</h2>
+          <p style="margin: 16px 0; color: var(--danger);">正确答案是: ${q.a[q.correct]}</p>
+          <button class="evo-btn" onclick="this.closest('.minigame-overlay').remove()">关闭</button>`;
+      }
+      renderAll();
+      checkAchievements();
+    };
+    opts.appendChild(btn);
+  });
+}
+
+// Catch Energy Game
+function startCatch() {
+  let overlay = document.createElement('div');
+  overlay.className = 'minigame-overlay';
+  overlay.innerHTML = `
+    <div class="minigame-box" style="position: relative; max-width: 600px;">
+      <button class="minigame-close" onclick="this.closest('.minigame-overlay').remove()">✕</button>
+      <h2>🎯 捕捉能量</h2>
+      <p style="color: var(--text-secondary); margin: 8px 0;">点击出现的能量球! 时间: <span id="catchTime">15</span>s | 得分: <span id="catchScore">0</span></p>
+      <div id="catchField" style="width: 100%; height: 300px; background: var(--bg-primary); border-radius: 12px; position: relative; overflow: hidden;"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let field = document.getElementById('catchField');
+  let score = 0;
+  let time = 15;
+  let fieldRect = field.getBoundingClientRect();
+
+  function spawnBall() {
+    if (time <= 0) return;
+    let ball = document.createElement('div');
+    ball.style.cssText = `
+      position: absolute; width: 40px; height: 40px;
+      background: radial-gradient(circle, var(--accent), var(--bg-card));
+      border-radius: 50%; cursor: pointer;
+      left: ${Math.random() * (field.clientWidth - 40)}px;
+      top: ${Math.random() * (field.clientHeight - 40)}px;
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    `;
+    let emojis = ['⚡', '🧬', '💫', '✨', '💎'];
+    ball.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    ball.onclick = () => {
+      score += 10;
+      document.getElementById('catchScore').textContent = score;
+      ball.style.transform = 'scale(0)';
+      setTimeout(() => ball.remove(), 200);
+    };
+    field.appendChild(ball);
+    setTimeout(() => { if (ball.parentNode) ball.remove(); }, 2000);
+    setTimeout(spawnBall, 400 + Math.random() * 600);
+  }
+
+  spawnBall();
+  let timer = setInterval(() => {
+    time--;
+    document.getElementById('catchTime').textContent = time;
+    if (time <= 0) {
+      clearInterval(timer);
+      let reward = score * (game.stage + 1);
+      game.resources.energy += reward;
+      game.totalEnergy += reward;
+      game.catchWins++;
+      field.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column;">
+        <h3>游戏结束!</h3><p>得分: ${score} | 获得 ${formatNum(reward)} 能量</p></div>`;
+      addLog(`捕捉能量: ${score}分, 获得${formatNum(reward)}能量`);
+      renderAll();
+      checkAchievements();
+    }
+  }, 1000);
+}
+
+// Memory Match Game
+function startMemory() {
+  let emojis = ['🧬', '⚡', '🦠', '🐟', '🦎', '🧑', '🚀', '✨'];
+  let pairs = emojis.slice(0, 4 + game.stage);
+  let cards = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
+
+  let overlay = document.createElement('div');
+  overlay.className = 'minigame-overlay';
+  let cols = Math.ceil(Math.sqrt(cards.length));
+  overlay.innerHTML = `
+    <div class="minigame-box" style="position: relative; max-width: 500px;">
+      <button class="minigame-close" onclick="this.closest('.minigame-overlay').remove()">✕</button>
+      <h2>🧠 记忆匹配</h2>
+      <p style="color: var(--text-secondary); margin: 8px 0;">步数: <span id="memMoves">0</span> | 匹配: <span id="memMatched">0</span>/${pairs.length}</p>
+      <div id="memGrid" style="display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 8px; margin-top: 16px;"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let grid = document.getElementById('memGrid');
+  let revealed = new Array(cards.length).fill(false);
+  let matched = new Array(cards.length).fill(false);
+  let first = -1, moves = 0, matchedCount = 0;
+
+  cards.forEach((c, i) => {
+    let card = document.createElement('div');
+    card.style.cssText = `
+      aspect-ratio: 1; background: var(--bg-secondary); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; cursor: pointer; transition: all 0.3s;
+      border: 2px solid transparent;
+    `;
+    card.textContent = '?';
+    card.onclick = () => {
+      if (revealed[i] || matched[i] || first === i) return;
+      revealed[i] = true;
+      card.textContent = cards[i];
+      card.style.borderColor = 'var(--accent)';
+      card.style.transform = 'rotateY(180deg)';
+
+      if (first === -1) {
+        first = i;
+      } else {
+        moves++;
+        document.getElementById('memMoves').textContent = moves;
+        if (cards[first] === cards[i]) {
+          matched[first] = matched[i] = true;
+          matchedCount++;
+          document.getElementById('memMatched').textContent = matchedCount;
+          card.style.borderColor = 'var(--success)';
+          grid.children[first].style.borderColor = 'var(--success)';
+          first = -1;
+          if (matchedCount === pairs.length) {
+            let reward = 500 * (game.stage + 1);
+            game.resources.dna += reward;
+            game.totalDna += reward;
+            game.memoryWins++;
+            setTimeout(() => {
+              overlay.querySelector('.minigame-box').innerHTML = `
+                <h2>🎉 全部匹配!</h2>
+                <p style="margin: 16px 0; color: var(--success);">步数: ${moves} | 获得 ${formatNum(reward)} DNA!</p>
+                <button class="evo-btn" onclick="this.closest('.minigame-overlay').remove()">关闭</button>`;
+              renderAll();
+              checkAchievements();
+            }, 500);
+          }
+        } else {
+          setTimeout(() => {
+            revealed[first] = revealed[i] = false;
+            grid.children[first].textContent = '?';
+            card.textContent = '?';
+            grid.children[first].style.borderColor = 'transparent';
+            card.style.borderColor = 'transparent';
+            first = -1;
+          }, 800);
+        }
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+// Clicker Challenge
+function startClicker() {
+  let overlay = document.createElement('div');
+  overlay.className = 'minigame-overlay';
+  overlay.innerHTML = `
+    <div class="minigame-box" style="position: relative;">
+      <button class="minigame-close" onclick="this.closest('.minigame-overlay').remove()">✕</button>
+      <h2>⚡ 疯狂点击</h2>
+      <p style="color: var(--text-secondary); margin: 8px 0;">10秒内尽可能多点! | 当前: <span id="clickerCount">0</span></p>
+      <div id="clickerBtn2" style="
+        width: 150px; height: 150px; border-radius: 50%; margin: 20px auto;
+        background: radial-gradient(circle at 30% 30%, #f87171, #1a1f4e);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 3rem; cursor: pointer; user-select: none;
+        box-shadow: 0 0 30px rgba(248, 113, 113, 0.3);
+      ">👆</div>
+      <p style="color: var(--warning);">时间: <span id="clickerTime">10</span>s</p>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  let count = 0;
+  let time = 10;
+  let btn2 = document.getElementById('clickerBtn2');
+  btn2.onmousedown = () => {
+    count++;
+    document.getElementById('clickerCount').textContent = count;
+    btn2.style.transform = 'scale(0.9)';
+    setTimeout(() => btn2.style.transform = 'scale(1)', 50);
+  };
+
+  let timer = setInterval(() => {
+    time--;
+    document.getElementById('clickerTime').textContent = time;
+    if (time <= 0) {
+      clearInterval(timer);
+      btn2.style.pointerEvents = 'none';
+      let reward = count * 5 * (game.stage + 1);
+      game.resources.energy += reward;
+      game.totalEnergy += reward;
+      if (count >= 80) game.clickerWins++;
+      overlay.querySelector('.minigame-box').innerHTML = `
+        <h2>⏱️ 时间到!</h2>
+        <p style="margin: 16px 0;">点击数: ${count}</p>
+        <p style="color: var(--success); margin-bottom: 16px;">获得 ${formatNum(reward)} 能量!</p>
+        <button class="evo-btn" onclick="this.closest('.minigame-overlay').remove()">关闭</button>`;
+      addLog(`疯狂点击: ${count}次, 获得${formatNum(reward)}能量`);
+      renderAll();
+      checkAchievements();
+    }
+  }, 1000);
+}
+
+// ============ PARTICLES BACKGROUND ============
+function initParticles() {
+  let canvas = document.getElementById('particles-bg');
+  let ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      r: Math.random() * 2 + 1,
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(108, 99, 255, 0.3)';
+      ctx.fill();
+    });
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        let dx = particles[i].x - particles[j].x;
+        let dy = particles[i].y - particles[j].y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(108, 99, 255, ${0.1 * (1 - dist / 120)})`;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.onresize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+}
+
+// ============ INIT ============
+document.getElementById('clickArea').addEventListener('click', doClick);
+document.getElementById('evoBtn').addEventListener('click', evolve);
+document.getElementById('quizBtn').addEventListener('click', startQuiz);
+document.getElementById('catchBtn').addEventListener('click', startCatch);
+document.getElementById('memoryBtn').addEventListener('click', startMemory);
+document.getElementById('clickerBtn').addEventListener('click', startClicker);
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderUpgrades();
+  });
+});
+
+// Save/Load
+function saveGame() {
+  let save = { ...game, achievements: [...game.achievements] };
+  localStorage.setItem('evolution_save', JSON.stringify(save));
+}
+
+function loadGame() {
+  let save = localStorage.getItem('evolution_save');
+  if (save) {
+    let data = JSON.parse(save);
+    Object.assign(game, data);
+    game.achievements = new Set(data.achievements);
+  }
+}
+
+loadGame();
+calcRates();
+renderAll();
+initParticles();
+setInterval(gameLoop, 100);
+setInterval(renderStats, 1000);
+setInterval(saveGame, 5000);
+addLog('游戏开始! 从单细胞开始进化之旅吧!');
+</script>
+</body>
+</html>
