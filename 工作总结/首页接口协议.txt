@@ -1,0 +1,309 @@
+摄像头统计 
+ /api/camera/camera/getCameraCount
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": {
+        "offline": 2,
+        "total": 20,
+        "online": 18
+    }
+}
+
+
+场景报警TOP5
+/api/alarm/alarm/getAlarmSceneCount
+
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        {
+            "num": 16,
+            "sceneName": "工作面"
+        },
+        {
+            "num": 16,
+            "sceneName": "井底车场"
+        },
+        {
+            "num": 9,
+            "sceneName": "变电所"
+        },
+        {
+            "num": 9,
+            "sceneName": "掘进面"
+        }
+    ]
+}
+
+预警统计
+/api/alarm/alarm/getAlarmLevelCount
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": {
+        "level1": 10,
+        "level2": 13,
+        "level3": 15,
+        "level4": 12
+    }
+}
+
+
+规则预警TOP5
+/api/alarm/alarm/getAlarmRuleCount
+
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        {
+            "total": 11,
+            "ruleName": "越界侦测"
+        },
+        {
+            "total": 11,
+            "ruleName": "烟火检测"
+        },
+        {
+            "total": 11,
+            "ruleName": "未戴安全帽"
+        },
+        {
+            "total": 10,
+            "ruleName": "异常停留"
+        },
+        {
+            "total": 7,
+            "ruleName": "皮带撕裂"
+        }
+    ]
+}
+
+近七日柱状图
+/api/alarm/alarm/getRecent7Alarm
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        {
+            "level4": 2,
+            "total_count": 6,
+            "alarm_date": "2026-03-27",
+            "level1": 1,
+            "level3": 2,
+            "level2": 1
+        },
+        {
+            "level4": 1,
+            "total_count": 6,
+            "alarm_date": "2026-03-28",
+            "level1": 1,
+            "level3": 2,
+            "level2": 2
+        },
+        {
+            "level4": 1,
+            "total_count": 6,
+            "alarm_date": "2026-03-29",
+            "level1": 1,
+            "level3": 2,
+            "level2": 2
+        },
+        {
+            "level4": 2,
+            "total_count": 6,
+            "alarm_date": "2026-03-30",
+            "level1": 1,
+            "level3": 2,
+            "level2": 1
+        },
+        {
+            "level4": 1,
+            "total_count": 6,
+            "alarm_date": "2026-03-31",
+            "level1": 1,
+            "level3": 2,
+            "level2": 2
+        },
+        {
+            "level4": 2,
+            "total_count": 8,
+            "alarm_date": "2026-04-01",
+            "level1": 2,
+            "level3": 2,
+            "level2": 2
+        },
+        {
+            "level4": 2,
+            "total_count": 8,
+            "alarm_date": "2026-04-02",
+            "level1": 2,
+            "level3": 2,
+            "level2": 2
+        }
+    ]
+}
+
+
+预警详情：
+/api/alarm/alarm/getAlarmDetail
+{
+    "msg": "操作成功",
+    "code": 200,
+    "data": [
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "remark": "采煤机运转期间人员违规进入",
+            "id": 1001,
+            "cameraId": 101,
+            "ruleId": 1,
+            "cameraName": "综采工作面主摄像头",
+            "workType": "工作面",
+            "ruleName": "越界侦测",
+            "alarmLevel": "1",
+            "alarmTime": "2026-04-02 09:18:05",
+            "alarmPic": "/alarms/img/1001.jpg",
+            "alarmVideo": "/alarms/video/1001.mp4",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "id": 1002,
+            "cameraId": 102,
+            "ruleId": 2,
+            "cameraName": "掘进面进口摄像头",
+            "workType": "掘进面",
+            "ruleName": "未戴安全帽",
+            "alarmLevel": "2",
+            "alarmTime": "2026-04-02 07:18:05",
+            "alarmPic": "/alarms/img/1002.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "admin",
+            "createTime": "2026-04-02 09:18:05",
+            "updateBy": "admin",
+            "updateTime": "2026-04-02 09:18:05",
+            "remark": "疑似烟雾，需立刻核实",
+            "id": 1003,
+            "cameraId": 103,
+            "ruleId": 4,
+            "cameraName": "中央变电所监控",
+            "workType": "变电所",
+            "ruleName": "烟火检测",
+            "alarmLevel": "1",
+            "alarmTime": "2026-04-02 06:18:05",
+            "alarmPic": "/alarms/img/1003.jpg",
+            "alarmVideo": "/alarms/video/1003.mp4",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "remark": "矿车周边人员停留超时",
+            "id": 1004,
+            "cameraId": 104,
+            "ruleId": 5,
+            "cameraName": "井底车场1号探头",
+            "workType": "井底车场",
+            "ruleName": "异常停留",
+            "alarmLevel": "3",
+            "alarmTime": "2026-04-02 04:18:05",
+            "alarmPic": "/alarms/img/1004.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "remark": "轻微划痕报警",
+            "id": 1005,
+            "cameraId": 101,
+            "ruleId": 3,
+            "cameraName": "综采工作面主摄像头",
+            "workType": "工作面",
+            "ruleName": "皮带撕裂",
+            "alarmLevel": "4",
+            "alarmTime": "2026-04-02 03:18:05",
+            "alarmPic": "/alarms/img/1005.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "id": 1006,
+            "cameraId": 105,
+            "ruleId": 1,
+            "cameraName": "回风巷摄像头",
+            "workType": "工作面",
+            "ruleName": "越界侦测",
+            "alarmLevel": "2",
+            "alarmTime": "2026-04-02 01:18:05",
+            "alarmPic": "/alarms/img/1006.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "remark": "安检员手动上报",
+            "id": 1007,
+            "cameraId": 106,
+            "ruleId": 2,
+            "cameraName": "主井口摄像头",
+            "workType": "井底车场",
+            "ruleName": "未戴安全帽",
+            "alarmLevel": "3",
+            "alarmTime": "2026-04-01 23:18:05",
+            "alarmPic": "/alarms/img/1007.jpg",
+            "alarmType": "2"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-02 09:18:05",
+            "remark": "反光误报",
+            "id": 1008,
+            "cameraId": 102,
+            "ruleId": 4,
+            "cameraName": "掘进面进口摄像头",
+            "workType": "掘进面",
+            "ruleName": "烟火检测",
+            "alarmLevel": "4",
+            "alarmTime": "2026-04-01 21:18:05",
+            "alarmPic": "/alarms/img/1008.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-01 09:18:05",
+            "id": 1009,
+            "cameraId": 103,
+            "ruleId": 1,
+            "cameraName": "中央变电所监控",
+            "workType": "变电所",
+            "ruleName": "越界侦测",
+            "alarmLevel": "3",
+            "alarmTime": "2026-04-01 08:18:05",
+            "alarmPic": "/alarms/img/1009.jpg",
+            "alarmType": "1"
+        },
+        {
+            "createBy": "system",
+            "createTime": "2026-04-01 09:18:05",
+            "id": 1010,
+            "cameraId": 104,
+            "ruleId": 5,
+            "cameraName": "井底车场1号探头",
+            "workType": "井底车场",
+            "ruleName": "异常停留",
+            "alarmLevel": "2",
+            "alarmTime": "2026-04-01 06:18:05",
+            "alarmPic": "/alarms/img/1010.jpg",
+            "alarmVideo": "/alarms/video/1010.mp4",
+            "alarmType": "1"
+        }
+    ]
+}
+

@@ -1,0 +1,4 @@
+start /w "" "Docker Desktop Installer.exe" install --installation-dir=D:\docker_desktop
+
+
+docker run -d -p 8080:28085 --name aiVideo ai_video_analysis:1.0

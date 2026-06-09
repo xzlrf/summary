@@ -1,0 +1,113 @@
+1、后端的代码是怎么和通风、告警设备交互的，用的什么协议
+2、前端看板展示的数据是怎么来的
+3、
+
+-Dmaven.test.skip=true -DarchetypeCatalog=internal -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Xmx1024m -XX:MaxMetaspaceSize=128m -Dmaven.multiModuleProjectDirectory=$MAVEN_HOME
+
+Windows IP 配置
+
+   主机名  . . . . . . . . . . . . . : LAPTOP-K2AJADS6
+   主 DNS 后缀 . . . . . . . . . . . :
+   节点类型  . . . . . . . . . . . . : 混合
+   IP 路由已启用 . . . . . . . . . . : 否
+   WINS 代理已启用 . . . . . . . . . : 否
+   DNS 后缀搜索列表  . . . . . . . . : lan
+
+以太网适配器 以太网:
+
+   媒体状态  . . . . . . . . . . . . : 媒体已断开连接
+   连接特定的 DNS 后缀 . . . . . . . : lan
+   描述. . . . . . . . . . . . . . . : Intel(R) Ethernet Connection (16) I219-V
+   物理地址. . . . . . . . . . . . . : 74-D7-13-B1-08-37
+   DHCP 已启用 . . . . . . . . . . . : 是
+   自动配置已启用. . . . . . . . . . : 是
+
+无线局域网适配器 本地连接* 1:
+
+   媒体状态  . . . . . . . . . . . . : 媒体已断开连接
+   连接特定的 DNS 后缀 . . . . . . . :
+   描述. . . . . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter
+   物理地址. . . . . . . . . . . . . : BA-1E-A4-38-58-5D
+   DHCP 已启用 . . . . . . . . . . . : 是
+   自动配置已启用. . . . . . . . . . : 是
+
+无线局域网适配器 本地连接* 2:
+
+   媒体状态  . . . . . . . . . . . . : 媒体已断开连接
+   连接特定的 DNS 后缀 . . . . . . . :
+   描述. . . . . . . . . . . . . . . : Microsoft Wi-Fi Direct Virtual Adapter #2
+   物理地址. . . . . . . . . . . . . : FA-1E-A4-38-58-5D
+   DHCP 已启用 . . . . . . . . . . . : 是
+   自动配置已启用. . . . . . . . . . : 是
+
+无线局域网适配器 WLAN:
+
+   连接特定的 DNS 后缀 . . . . . . . : lan
+   描述. . . . . . . . . . . . . . . : Realtek RTL8852BE WiFi 6 802.11ax PCIe Adapter
+   物理地址. . . . . . . . . . . . . : B8-1E-A4-38-58-5D
+   DHCP 已启用 . . . . . . . . . . . : 是
+   自动配置已启用. . . . . . . . . . : 是
+   本地链接 IPv6 地址. . . . . . . . : fe80::da1e:feb9:9ffa:2831%3(首选)
+   IPv4 地址 . . . . . . . . . . . . : 192.168.110.141(首选)
+   子网掩码  . . . . . . . . . . . . : 255.255.255.0
+   获得租约的时间  . . . . . . . . . : 2026年3月26日 9:06:34
+   租约过期的时间  . . . . . . . . . : 2026年3月26日 12:06:44
+   默认网关. . . . . . . . . . . . . : 192.168.110.1
+   DHCP 服务器 . . . . . . . . . . . : 192.168.110.1
+   DHCPv6 IAID . . . . . . . . . . . : 62398116
+   DHCPv6 客户端 DUID  . . . . . . . : 00-01-00-01-2C-CF-24-BA-74-D7-13-B1-08-37
+   DNS 服务器  . . . . . . . . . . . : 192.168.110.1
+   TCPIP 上的 NetBIOS  . . . . . . . : 已启用
+
+以太网适配器 蓝牙网络连接:
+
+   媒体状态  . . . . . . . . . . . . : 媒体已断开连接
+   连接特定的 DNS 后缀 . . . . . . . :
+   描述. . . . . . . . . . . . . . . : Bluetooth Device (Personal Area Network)
+   物理地址. . . . . . . . . . . . . : B8-1E-A4-38-58-5E
+   DHCP 已启用 . . . . . . . . . . . : 是
+   自动配置已启用. . . . . . . . . . : 是
+
+
+
+
+
+
+在我们开始之前：
+
+1. 先用你自己的话说说你理解的——我要解决什么问题、交付物是什么。标出你拿不准但自己做了假设的地方。如果你觉得有更好的技术方案，直接说，我来决定。
+
+2. 然后向我提问——每次最多 3 个最关键的问题，直到你对以下三点有 100% 的把握：
+   - 我真正想要达成的目标是什么（而不是我字面上说的）
+   - 有哪些我没说出口的约束或偏好（技术栈、性能要求、需要兼容的现有代码、不能动的部分）
+   - 你计划怎么实现——核心思路是什么、为什么选这个方案
+
+3. 在没有得到我明确的「可以开始」之前，不要写任何代码或修改任何文件。
+
+
+claude --permission-mode auto --allowedTools "Read" "Edit" "Bash(npm run lint:*)" "Bash(npm test)" "Bash(git *)" "Bash(echo)" \ --max-turns 50 \ --max-budget-usd 10.00
+
+
+git clone https://github.com/XingHehy/netease-musician-task.git
+
+
+HSET netease:music:task aaabbbccc '{"phone": "17860622393", "password": "xz247410"}'
+
+
+MUSIC_R_T=1445785385926; MUSIC_A_T=1445785368231; Hm_lvt_1483fb4774c02a30ffa6f0e2945e9b70=1778305416; HMACCOUNT=F7A9B58FB9366CC6; JSESSIONID-WYYY=HIP0nnlTNwYga7iDZgxebM77UsrbNxkyWhB71yqTICbVQgVlJ1X4FEtsx%2BWclZklrVTOunHTEuKYSzvVnohQtTcwYCoQV3QQ0awQD8RcqqMQO32sBffkk%5CyhmBCqwpa%2B2lWUcYlgOybaq4fy%5CcB2081VBJehe8Cm8lMdHRJAg5UAj4jx%3A1778307216075; _iuqxldmzr_=32; _ntes_nnid=2e7cce9134f3a13b1bcb04cf957c0ce0,1778305416093; _ntes_nuid=2e7cce9134f3a13b1bcb04cf957c0ce0; NMTID=00O26aukrHJFXgu-0vXqktoIcFC9HQAAAGeC0M7wg; WEVNSM=1.0.0; WNMCID=dyfcou.1778305417106.01.0; sDeviceId=YD-AP8HPQYJD%2FlEA1EUUBPSuUHKJU8xjWDb; __remember_me=true; MUSIC_U=00367334FC941383AA464C4A817EC19B345D74A3C8D3C109A0D1ECC7C6A39BF5ECB49583C7CB4DC59084F2E864F0E8B03CFD6EBB292580EF74C24781034B62C50D76507FBAB0D8966A3977AC4F7D8C599029C6FC98FA5E4BC0C4649F80AC530FEB8E8BE65A13707FA694FF6DE6AEB780432F1176BFA3F2EB06BBEE6DF67B34D5AC39460B109971FC441AE83CE02CB33481F6F70CDD5DDC1C17386433E75B6CF5CE5EB5FD96DB466D0D4FFBE923AEDC53A463AF559C25DF3ECB8F92826F6ABC01EAFB61CB34286BE434953F6865A517AD2DCA2EB704C3B509F39184573686E1A4734B9F860DC8EA312D3E415AC941A4CFE0C8D0C566B4522968BD6C5319A1EB0CFCE0E319B0288DD7EB477CC9BC22AF312AA8733A99B3A93D6952E350809438A17E525ED4B8E90BE1C9CAADE2CF249507A6742EB65F35C8753AB03C5909EDAE34046046E3E9401D404272965287CA6885E97CA012FFEA4A0B21055189572A4BF66986C5988D7F3A767CD7A8AC43B8E5982AC60EA176693C53B6BF001E5C5630C8FD92C7C169F01988B72FCFF5A107A28DB1; __csrf=f171eae521d1d3ce5d30511c17eb8191; ntes_kaola_ad=1; Hm_lpvt_1483fb4774c02a30ffa6f0e2945e9b70=1778305497
+
+
+https://ofox.ai/zh 大模型配置
+
+OpenAI
+https://api.ofox.ai/v1
+
+Anthropic
+https://api.ofox.ai/anthropic
+
+Gemini
+https://api.ofox.ai/gemini
+
+sk-of-eWavgchsKsVrglIfjNSYHddgzxoiFXhOvBoDEmIlMwLLGRqCBnqdKTnsOIdDHtdH
+
+z-ai/glm-4.7-flash:free
